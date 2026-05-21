@@ -53,8 +53,30 @@ export function newRelation(fromId = '', toId = '') {
   return { id: uid('rel'), fromId, toId, type: '친구', degree: 50, emotion: '', emotionDegree: 50 }
 }
 
+// 세계관 키워드 그룹: 그룹명 + 키워드-값(설명) 쌍 (최대 5)
+export function newWorldItem() {
+  return { keyword: '', value: '' }
+}
 export function newWorldElement() {
-  return { id: uid('we'), key: '', value: '' }
+  return { id: uid('we'), groupName: '', items: [newWorldItem()] }
+}
+
+// 예전 형식 → 키워드-값 쌍 그룹으로 변환
+function migrateWorldElement(e) {
+  if (!e || typeof e !== 'object') return newWorldElement()
+  // 신버전: items(키워드-값 쌍)
+  if (Array.isArray(e.items)) {
+    const items = e.items.map((it) => ({ keyword: it.keyword || '', value: it.value || '' })).slice(0, 5)
+    return { id: e.id || uid('we'), groupName: e.groupName || '', items: items.length ? items : [newWorldItem()] }
+  }
+  // 키워드 배열 + 그룹 설명 버전
+  if (Array.isArray(e.keywords) || 'groupName' in e || 'description' in e) {
+    const kws = (Array.isArray(e.keywords) ? e.keywords : []).filter(Boolean).slice(0, 5)
+    const items = kws.map((k, i) => ({ keyword: k, value: i === 0 ? (e.description || '') : '' }))
+    return { id: e.id || uid('we'), groupName: e.groupName || '', items: items.length ? items : [{ keyword: '', value: e.description || '' }] }
+  }
+  // 구버전 {key, value}
+  return { id: e.id || uid('we'), groupName: e.key || '', items: [{ keyword: '', value: e.value || '' }] }
 }
 
 export function newProject(name = '새 프로젝트') {
@@ -69,6 +91,7 @@ export function newProject(name = '새 프로젝트') {
     relations: [],
     world: { overview: '', elements: [] },
     exportOverrides: {}, // { [platformId]: { [fieldKey]: value } }
+    mappings: {}, // { [platformId]: [{ key, target, sources:[] }] } — 사용자 커스텀 매핑
   }
 }
 
@@ -84,6 +107,8 @@ function load() {
     projects.forEach((p) => {
       if (Array.isArray(p.characters)) p.characters = p.characters.map(migrateCharacter)
       if (Array.isArray(p.relations)) p.relations = p.relations.map((r) => ({ ...newRelation(r.fromId, r.toId), ...r }))
+      if (p.world && Array.isArray(p.world.elements)) p.world.elements = p.world.elements.map(migrateWorldElement)
+      if (!p.mappings || typeof p.mappings !== 'object') p.mappings = {}
     })
     return {
       projects,
@@ -199,6 +224,42 @@ export function removeWorldElement(projectId, elId) {
   touch(p)
 }
 
+export function addWorldItem(projectId, elId) {
+  const p = getProject(projectId)
+  if (!p) return
+  const el = p.world.elements.find((e) => e.id === elId)
+  if (el && el.items.length < 5) {
+    el.items.push(newWorldItem())
+    touch(p)
+  }
+}
+
+export function removeWorldItem(projectId, elId, idx) {
+  const p = getProject(projectId)
+  if (!p) return
+  const el = p.world.elements.find((e) => e.id === elId)
+  if (el && el.items.length > 1) {
+    el.items.splice(idx, 1)
+    touch(p)
+  }
+}
+
+// ---- 플랫폼 매핑(입력 요소 → 입력칸) 저장 ----------------------------------
+export function setPlatformMapping(projectId, platformId, targets) {
+  const p = getProject(projectId)
+  if (!p) return
+  if (!p.mappings) p.mappings = {}
+  p.mappings[platformId] = JSON.parse(JSON.stringify(targets))
+  touch(p)
+}
+
+export function clearPlatformMapping(projectId, platformId) {
+  const p = getProject(projectId)
+  if (!p || !p.mappings) return
+  delete p.mappings[platformId]
+  touch(p)
+}
+
 export function setExportOverride(projectId, platformId, fieldKey, value) {
   const p = getProject(projectId)
   if (!p) return
@@ -221,7 +282,7 @@ export function exportProjectJSON(id) {
   const p = getProject(id)
   if (!p) return null
   return {
-    format: 'ai-character-archive',
+    format: 'ai-character-generator',
     schemaVersion: SCHEMA_VERSION,
     exportedAt: now(),
     project: JSON.parse(JSON.stringify(p)),
@@ -252,7 +313,7 @@ export function templateProjectJSON() {
   subChar.exampleDialogue = ''
 
   return {
-    format: 'ai-character-archive',
+    format: 'ai-character-generator',
     schemaVersion: SCHEMA_VERSION,
     exportedAt: now(),
     project: {
@@ -268,11 +329,19 @@ export function templateProjectJSON() {
       world: {
         overview: '마법이 흔한 중세 왕국. 정령과 계약한 자만 마법을 쓸 수 있다.',
         elements: [
-          { id: 'we_example_1', key: '마법 체계', value: '정령 계약 기반' },
-          { id: 'we_example_2', key: '수도', value: '아스텔' },
+          { id: 'we_example_1', groupName: '마법 체계', items: [
+            { keyword: '정령 계약', value: '정령과 계약한 자만 마법을 쓸 수 있다.' },
+            { keyword: '속성', value: '불·물·바람·흙 4속성으로 나뉜다.' },
+            { keyword: '마나', value: '계약 정령의 격에 따라 총량이 정해진다.' },
+          ] },
+          { id: 'we_example_2', groupName: '지명', items: [
+            { keyword: '아스텔', value: '왕국의 수도.' },
+            { keyword: '왕립학원', value: '아스텔에 위치한 마법 교육 기관.' },
+          ] },
         ],
       },
       exportOverrides: {},
+      mappings: {},
     },
   }
 }
@@ -307,10 +376,11 @@ export function parseProjectJSON(text) {
     world: {
       overview: proj.world?.overview || '',
       elements: Array.isArray(proj.world?.elements)
-        ? proj.world.elements.map((e) => ({ ...newWorldElement(), ...e, id: e.id || uid('we') }))
+        ? proj.world.elements.map(migrateWorldElement)
         : [],
     },
     exportOverrides: proj.exportOverrides && typeof proj.exportOverrides === 'object' ? proj.exportOverrides : {},
+    mappings: proj.mappings && typeof proj.mappings === 'object' ? proj.mappings : {},
   }
   return merged
 }
@@ -405,8 +475,13 @@ export function generateProjectMarkdown(projectId) {
     }
     if (p.world.elements && p.world.elements.length > 0) {
       p.world.elements.forEach((e) => {
-        if (e.key || e.value) {
-          lines.push(`- **${e.key || '항목'}**: ${e.value || ''}`)
+        const items = (e.items || []).filter((i) => i.keyword || i.value)
+        if (e.groupName || items.length) {
+          const kws = items.map((i) => i.keyword).filter(Boolean)
+          lines.push(`- **${e.groupName || '키워드 그룹'}**${kws.length ? ` (${kws.join(', ')})` : ''}`)
+          items.forEach((i) => {
+            if (i.keyword || i.value) lines.push(`  - ${i.keyword || '?'}: ${i.value || ''}`)
+          })
         }
       })
       lines.push('')
@@ -438,7 +513,7 @@ export function generateProjectHTML(projectId) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>캐릭터 설정 · AI 캐릭터 아카이브</title>
+  <title>캐릭터 설정 · ai-character-generator</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; }
@@ -497,7 +572,7 @@ export function generateProjectHTML(projectId) {
   
   html += `
     <footer>
-      <p>AI 캐릭터 아카이브 · <a href="https://github.com" style="color: #f48ab0; text-decoration: none;">GitHub</a></p>
+      <p>ai-character-generator 로 작성됨</p>
     </footer>
   </div>
 </body>

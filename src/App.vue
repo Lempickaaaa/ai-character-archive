@@ -8,7 +8,7 @@ import { toastState } from './store/toast.js'
     <header class="topbar">
       <RouterLink to="/" class="brand">
         <span class="logo">💫</span>
-        <span class="brand-text">캐릭터 생성/편집기</span>
+        <span class="brand-text">ai-character-generator</span>
       </RouterLink>
       <span class="brand-sub">AI 캐릭터챗 설정 관리 · 플랫폼별 내보내기</span>
     </header>

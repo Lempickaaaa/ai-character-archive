@@ -50,12 +50,15 @@ export function relationDegreeLabel(v) {
   return '매우 강함'
 }
 
-// 세계관 주요 요소 키워드 추천(placeholder 용)
+// 세계관 키워드 그룹 추천 (그룹명 placeholder 용)
 export const WORLD_ELEMENT_SUGGESTIONS = [
   '시대/배경', '장소', '주요 세력', '마법/기술 체계',
   '종족', '계급/신분', '경제', '종교/신앙',
   '주요 사건', '규칙/금기', '분위기', '용어',
 ]
+
+// 제타 로어북 기준: 키워드 그룹당 최대 5개
+export const WORLD_KEYWORDS_MAX = 5
 
 // 템플릿 태그
 export const TEMPLATE_TAGS = [

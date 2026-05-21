@@ -1,4 +1,4 @@
-# 캐릭터 아카이브 (ai-character-archive)
+# ai-character-generator
 
 💫 제타 · 블룸 · 멜팅 · 크랙 · 케이브덕 등 AI 캐릭터챗 유저를 위한 **설정 관리 + 플랫폼별 내보내기** 도구.
 
