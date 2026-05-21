@@ -96,7 +96,7 @@ async function submitFeedback() {
 <template>
   <div class="page">
     <div class="hero card fade-rise" style="--delay: 0ms">
-      <h1 class="hero-title">나만의 캐릭터 설정을 한 곳에 ✿</h1>
+      <h1 class="hero-title">나만의 캐릭터 설정을 한 곳에</h1>
       <p class="hero-desc">
         제타 · 블룸 · 멜팅 · 크랙 · 케이브덕 — 캐릭터와 세계관을 한 번 정리하면
         플랫폼별 입력칸에 맞춰 바로 복붙할 수 있어요.
