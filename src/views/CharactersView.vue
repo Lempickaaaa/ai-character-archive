@@ -18,29 +18,32 @@ function summaryLen(c) {
 <template>
   <div>
     <!-- 1-1 캐릭터 설정 -->
-    <div class="spread">
+    <div class="spread fade-rise" style="--delay: 0ms">
       <div>
         <h2 class="section-title">🧸 캐릭터 설정</h2>
         <p class="section-desc">역할을 고르고 기본정보·성격·외모 등을 채워보세요. 주변/유저 캐릭터는 설정 {{ NON_MAIN_LIMIT }}자 제한이에요.</p>
       </div>
     </div>
 
-    <div class="add-row">
+    <div class="add-row fade-rise" style="--delay: 70ms">
       <button v-for="r in ROLES" :key="r.value" class="btn" @click="addCharacter(project.id, r.value)">
         {{ r.emoji }} {{ r.label }} 추가
       </button>
     </div>
 
-    <div v-if="project.characters.length === 0" class="empty card">
+    <div v-if="project.characters.length === 0" class="empty card fade-rise" style="--delay: 140ms">
       <div class="big">🐣</div>
       <p>아직 캐릭터가 없어요. 위 버튼으로 추가해보세요!</p>
     </div>
 
     <div
-      v-for="c in project.characters"
+      v-for="(c, index) in project.characters"
       :key="c.id"
-      class="card char-card"
-      :style="{ '--accent': c.role === 'main' ? 'var(--pink)' : c.role === 'user' ? 'var(--lav)' : 'var(--mint)' }"
+      class="card char-card fade-rise"
+      :style="{
+        '--delay': `${140 + index * 90}ms`,
+        '--accent': c.role === 'main' ? 'var(--green)' : c.role === 'user' ? 'var(--lav)' : 'var(--mint)'
+      }"
     >
       <div class="char-head">
         <div class="char-head-left">
@@ -124,10 +127,10 @@ function summaryLen(c) {
       </div>
     </div>
 
-    <hr class="divider" style="margin: 28px 0" />
+    <hr class="divider fade-rise" style="margin: 28px 0; --delay: 220ms" />
 
     <!-- 1-1-2 관계성 -->
-    <div class="spread">
+    <div class="spread fade-rise" style="--delay: 260ms">
       <div>
         <h2 class="section-title">💞 캐릭터 관계성</h2>
         <p class="section-desc">캐릭터 → [관계 유형 · 정도 · 감정] → 캐릭터 형식으로 저장돼요. (내보내기 시 캐릭터 정보에 포함)</p>
@@ -135,16 +138,21 @@ function summaryLen(c) {
       <button class="btn btn-lav btn-sm" :disabled="!hasChars" @click="addRelation(project.id)">+ 관계 추가</button>
     </div>
 
-    <div v-if="!hasChars" class="empty card">
+    <div v-if="!hasChars" class="empty card fade-rise" style="--delay: 320ms">
       <p class="muted">먼저 캐릭터를 추가하면 관계를 연결할 수 있어요.</p>
     </div>
 
-    <div v-else-if="project.relations.length === 0" class="empty card">
+    <div v-else-if="project.relations.length === 0" class="empty card fade-rise" style="--delay: 320ms">
       <div class="big">🔗</div>
       <p>아직 관계가 없어요. '관계 추가'를 눌러보세요!</p>
     </div>
 
-    <div v-for="r in project.relations" :key="r.id" class="card rel-card">
+    <div
+      v-for="(r, index) in project.relations"
+      :key="r.id"
+      class="card rel-card fade-rise"
+      :style="{ '--delay': `${320 + index * 80}ms` }"
+    >
       <div class="rel-line">
         <select v-model="r.fromId" class="rel-char">
           <option v-for="c in project.characters" :key="c.id" :value="c.id">{{ c.name || '(이름 없음)' }}</option>
@@ -192,7 +200,7 @@ function summaryLen(c) {
 .name-input { flex: 1; min-width: 140px; font-family: var(--font-head); font-size: 1.05rem; }
 .role-hint { margin: 8px 0 16px; }
 
-.block-label { font-family: var(--font-head); font-size: .92rem; color: var(--pink-strong); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1.5px dashed var(--line-strong); }
+.block-label { font-family: var(--font-head); font-size: .92rem; color: var(--green-strong); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1.5px dashed var(--line-strong); }
 
 .basic-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 @media (max-width: 720px) { .basic-grid { grid-template-columns: repeat(2, 1fr); } }

@@ -51,8 +51,8 @@ function addWithKey(key) {
 
 <style scoped>
 .suggest-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0 16px; }
-.suggest-chip { border: 1.5px dashed var(--line-strong); background: #fff; color: var(--ink-soft); border-radius: 999px; padding: 5px 12px; font-size: .8rem; cursor: pointer; font-family: var(--font-body); transition: all .15s; }
-.suggest-chip:hover { border-color: var(--lav); color: #6b5bb0; background: var(--lav-soft); }
+.suggest-chip { border: 1.5px dashed var(--line-strong); background: var(--surface-soft); color: var(--ink-soft); border-radius: 999px; padding: 5px 12px; font-size: .8rem; cursor: pointer; font-family: var(--font-body); transition: all .15s; }
+.suggest-chip:hover { border-color: var(--green); color: var(--ink); background: rgba(201, 138, 87, 0.08); }
 
 .el-card { display: grid; grid-template-columns: 200px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; }
 .el-key { font-weight: 600; }

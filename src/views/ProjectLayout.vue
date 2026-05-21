@@ -17,7 +17,7 @@ const tabs = [
 
 <template>
   <div v-if="project" class="page">
-    <div class="proj-bar">
+    <div class="proj-bar fade-rise" style="--delay: 0ms">
       <div class="proj-bar-top">
         <RouterLink to="/" class="back">← 목록</RouterLink>
         <input v-model="project.name" class="proj-title-input" placeholder="프로젝트 이름" />
@@ -43,7 +43,7 @@ const tabs = [
   </div>
 
   <div v-else class="page">
-    <div class="empty card">
+    <div class="empty card fade-rise" style="--delay: 60ms">
       <div class="big">🔍</div>
       <p>프로젝트를 찾을 수 없어요.</p>
       <RouterLink to="/" class="btn btn-primary" style="margin-top: 12px">목록으로 가기</RouterLink>
@@ -57,10 +57,10 @@ const tabs = [
 .back { font-size: .9rem; color: var(--ink-soft); flex-shrink: 0; font-weight: 600; }
 .proj-title-input { font-family: var(--font-head); font-size: 1.4rem; color: var(--ink); background: transparent; border: 1.5px solid transparent; padding: 4px 10px; border-radius: var(--radius-sm); }
 .proj-title-input:hover { background: var(--surface-soft); }
-.proj-title-input:focus { background: #fff; border-color: var(--pink); box-shadow: 0 0 0 4px var(--pink-soft); }
+.proj-title-input:focus { background: var(--surface); border-color: var(--green); box-shadow: 0 0 0 4px rgba(201, 138, 87, 0.16); }
 
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; background: rgba(255,255,255,.6); padding: 6px; border-radius: 999px; border: 1.5px solid var(--line); width: fit-content; }
-.tab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; font-size: .9rem; font-weight: 600; color: var(--ink-soft); transition: background .15s, color .15s; }
-.tab:hover { background: var(--surface-soft); color: var(--ink); }
-.tab.active { background: linear-gradient(135deg, var(--pink), var(--pink-strong)); color: #fff; box-shadow: var(--shadow-sm); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; background: rgba(255,244,233,.03); padding: 6px; border-radius: 999px; border: 1.5px solid rgba(240, 201, 154, 0.12); width: fit-content; box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+.tab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; font-size: .9rem; font-weight: 600; color: var(--ink-soft); transition: background .15s, color .15s, transform .15s; }
+.tab:hover { background: var(--surface-soft); color: var(--ink); transform: translateY(-1px); }
+.tab.active { background: linear-gradient(135deg, var(--green), var(--pink-strong)); color: #120c09; box-shadow: var(--shadow-sm); }
 </style>

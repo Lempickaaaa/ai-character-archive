@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { PLATFORMS } from '../data/platforms.js'
+import { PLATFORMS, replaceTemplates } from '../data/platforms.js'
 import { setExportOverride, clearExportOverrides } from '../store/index.js'
-import { copyText } from '../store/toast.js'
+import { copyText, toast } from '../store/toast.js'
 import { ROLES } from '../data/constants.js'
 
 const props = defineProps({ project: { type: Object, required: true } })
@@ -58,7 +58,10 @@ function resetPlatform() {
 function copyAll() {
   const text = fields.value
     .filter((f) => (f.value || '').trim())
-    .map((f) => `■ ${f.label}\n${f.value}`)
+    .map((f) => {
+      const converted = replaceTemplates(f.value, activeChar.value, props.project.characters)
+      return `■ ${f.label}\n${converted}`
+    })
     .join('\n\n')
   copyText(text)
 }
@@ -137,7 +140,7 @@ function overCount(f) {
             <span v-if="f.maxlength" class="counter tiny" :class="{ over: overCount(f) }">
               {{ (f.value || '').length }} / {{ f.maxlength }}
             </span>
-            <button class="btn btn-ghost btn-sm" @click="copyText(f.value || '')">복사</button>
+            <button class="btn btn-ghost btn-sm" @click="copyText(replaceTemplates(f.value || '', activeChar, project.characters))">복사</button>
           </div>
         </div>
         <p v-if="f.hint" class="tiny muted field-hint">{{ f.hint }}</p>
@@ -164,10 +167,10 @@ function overCount(f) {
 .sel-label { width: 48px; flex-shrink: 0; padding-top: 8px; font-weight: 600; }
 .char-chips, .plat-chips { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.char-chip, .plat-chip { border: 1.5px solid var(--line-strong); background: #fff; border-radius: 999px; padding: 8px 15px; font-size: .88rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; font-family: var(--font-body); transition: all .14s; }
+.char-chip, .plat-chip { border: 1.5px solid var(--line-strong); background: var(--surface-soft); border-radius: 999px; padding: 8px 15px; font-size: .88rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; font-family: var(--font-body); transition: all .14s; }
 .char-chip:hover, .plat-chip:hover { transform: translateY(-1px); }
-.char-chip.on { background: linear-gradient(135deg, var(--lav), #9f8cff); color: #fff; border-color: transparent; }
-.plat-chip.on { background: var(--pc); color: #fff; border-color: transparent; box-shadow: var(--shadow-sm); }
+.char-chip.on { background: linear-gradient(135deg, var(--green), var(--green-strong)); color: #081019; border-color: transparent; font-weight: 700; }
+.plat-chip.on { background: linear-gradient(135deg, var(--pc), rgba(255, 255, 255, 0.22)); color: #081019; border-color: transparent; box-shadow: var(--shadow-sm); }
 
 .plat-info { border-left: 5px solid var(--pc); }
 

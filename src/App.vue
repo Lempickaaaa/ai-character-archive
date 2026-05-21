@@ -34,13 +34,14 @@ import { toastState } from './store/toast.js'
   align-items: center;
   gap: 14px;
   padding: 14px 22px;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(10px);
-  border-bottom: 1.5px solid var(--line);
+  background: linear-gradient(180deg, rgba(22, 17, 19, 0.96), rgba(12, 10, 11, 0.9));
+  backdrop-filter: blur(14px);
+  border-bottom: 1.5px solid rgba(240, 201, 154, 0.14);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 .brand { display: inline-flex; align-items: center; gap: 9px; }
-.logo { font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(255,140,180,.35)); }
-.brand-text { font-family: var(--font-head); font-size: 1.25rem; color: var(--ink); }
-.brand-sub { color: var(--ink-faint); font-size: .82rem; }
+.logo { font-size: 1.5rem; filter: drop-shadow(0 2px 6px rgba(201, 138, 87, 0.32)); }
+.brand-text { font-family: var(--font-head); font-size: 1.25rem; color: var(--ink); letter-spacing: .01em; }
+.brand-sub { color: var(--ink-soft); font-size: .82rem; }
 @media (max-width: 560px) { .brand-sub { display: none; } }
 </style>

@@ -4,6 +4,17 @@
 //   · 세계관(world)    → 플랫폼의 세계관 슬롯에 포함 (제타는 '로어북'이 세계관에 해당)
 import { RELATION_TYPES, relationDegreeLabel, BASIC_INFO_FIELDS } from './constants.js'
 
+// 템플릿 변환 함수 - {{user}}, {{char}} 를 실제 캐릭터 이름으로 변환
+export function replaceTemplates(text, character, characters) {
+  if (!text) return text
+  let result = text
+  result = result.replace(/\{\{user\}\}/g, '(유저)')
+  if (character?.name) {
+    result = result.replace(/\{\{char\}\}/g, character.name)
+  }
+  return result
+}
+
 export function basicInfoText(c) {
   if (!c || !c.basic) return ''
   return BASIC_INFO_FIELDS.map((f) => {
@@ -106,7 +117,7 @@ export const PLATFORMS = [
     nameEn: 'bloom',
     emoji: '🌷',
     color: '#f48ab0',
-    note: '관계는 프롬프트(페르소나)에, 세계관은 로어북에 들어갑니다. (로어북 캐릭터당 최대 5개)',
+    note: '관계는 프롬프트(페르소나)에, 세계관에 들어갑니다.',
     docUrl: 'https://bloom-ai.me',
     build(ctx) {
       const p = ctxParts(ctx)
@@ -114,7 +125,7 @@ export const PLATFORMS = [
         { key: 'name', label: '캐릭터 이름', hint: '', maxlength: 20, value: p.name },
         { key: 'info', label: '캐릭터 정보', hint: '나이·직업 등 기본 프로필', multiline: true, value: joinBlocks(p.basic, p.appearance && `외모: ${p.appearance}`) },
         { key: 'prompt', label: '프롬프트 (페르소나)', hint: '성격·말투 지시 + 관계', multiline: true, value: joinBlocks(p.body, p.speech && `(말투: ${p.speech})`, p.relBlock) },
-        { key: 'lorebook', label: '로어북 (세계관)', hint: '세계관 키워드-값 (최대 5개)', multiline: true, value: p.world },
+        { key: 'world', label: '세계관', hint: '세계관 정보', multiline: true, value: p.world },
         { key: 'first', label: '첫 메시지 (도입부)', hint: '대화 시작 첫 메시지', multiline: true, value: p.first },
         { key: 'example', label: '예시 대화', hint: 'Q/A 형식 예시 대화', multiline: true, value: p.example },
       ]

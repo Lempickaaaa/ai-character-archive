@@ -56,3 +56,9 @@ export const WORLD_ELEMENT_SUGGESTIONS = [
   '종족', '계급/신분', '경제', '종교/신앙',
   '주요 사건', '규칙/금기', '분위기', '용어',
 ]
+
+// 템플릿 태그
+export const TEMPLATE_TAGS = [
+  { tag: '{{user}}', label: '유저 캐릭터', desc: '자동으로 "(유저)"로 표시됨' },
+  { tag: '{{char}}', label: '주요 캐릭터', desc: '선택한 캐릭터의 이름으로 자동 변환됨' },
+]
